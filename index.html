@@ -5,6 +5,44 @@
     <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
   <title>Random Sum</title>
   <style>
+       .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .box {
+      width: 320px;
+      background: #111a2e;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 10px;
+    }
+
+    .tabs button {
+      flex: 1;
+      background: #1f2937;
+      margin: 2px;
+    }
+
+    .active {
+      background: #4f46e5 !important;
+    }
+
+    .small {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 10px;
+      cursor: pointer;
+      color: #aaa;
+    }
   hr {
     height: 2px;
     border: none;
@@ -289,7 +327,25 @@
     </style>
 </head>
 <body>
-  
+  <div class="modal" id="authModal">
+  <div class="box">
+
+    <div class="tabs">
+      <button onclick="switchTab('login')" id="loginTab" class="active">Login</button>
+      <button onclick="switchTab('signup')" id="signupTab">Signup</button>
+    </div>
+
+    <input id="user" placeholder="Username">
+    <input id="pass" type="password" placeholder="Password">
+
+    <button onclick="auth()">Continue</button>
+
+    <div class="small" onclick="skipAuth()">
+      (Dev mode skip)
+    </div>
+
+  </div>
+  </div>
   <div class="container">
     <h3 class="h3">Take random Sum</h3>  <div class="buttons"> 
  <button class="btn" onclick="randomSum()">
@@ -364,7 +420,57 @@ if (num >=300){
 return
 }
   }
-  
+
+let mode = "login";
+
+  function switchTab(tab) {
+    mode = tab;
+
+    document.getElementById("loginTab").classList.remove("active");
+    document.getElementById("signupTab").classList.remove("active");
+
+    document.getElementById(tab + "Tab").classList.add("active");
+  }
+
+  function auth() {
+    const user = document.getElementById("user").value;
+    const pass = document.getElementById("pass").value;
+
+    if (!user || !pass) {
+      alert("Fill all fields");
+      return;
+    }
+
+    if (mode === "signup") {
+      localStorage.setItem("dev_user", user);
+      localStorage.setItem("dev_pass", pass);
+      alert("Account created!");
+    }
+
+    const savedUser = localStorage.getItem("dev_user");
+    const savedPass = localStorage.getItem("dev_pass");
+
+    if (user === savedUser && pass === savedPass) {
+      loginSuccess(user);
+    } else {
+      alert("Invalid credentials");
+    }
+  }
+
+  function loginSuccess(user) {
+    document.getElementById("authModal").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  }
+
+  function skipAuth() {
+    document.getElementById("authModal").style.display = "none";
+    document.getElementById("app").style.display = "block";
+  }
+
+  // auto login
+  if (localStorage.getItem("dev_user")) {
+    skipAuth();
+  }
   
   </script>
 </body>
